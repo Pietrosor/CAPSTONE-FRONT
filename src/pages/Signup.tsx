@@ -1,21 +1,28 @@
-// src/pages/Signup.tsx
 import React, { useState } from "react"
 import { Form, Button } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
 import NavbarComponent from "../components/NavbarComponent"
+// Attenzione al nome del file: FooterComponent (singolare)
 import FooterComponent from "../components/FooterComponents"
 
 interface SignupForm {
   username: string
   password: string
+  role: "cliente" | "istruttore"
 }
 
 export default function Signup() {
   const navigate = useNavigate()
-  const [form, setForm] = useState<SignupForm>({ username: "", password: "" })
+  const [form, setForm] = useState<SignupForm>({
+    username: "",
+    password: "",
+    role: "cliente",
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+  // accetta ora eventi da <input> e da <select>
+  const handleChange: React.ChangeEventHandler<any> = (e) => {
+    const { name, value } = e.target
+    setForm((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -54,6 +61,18 @@ export default function Signup() {
                 placeholder="Scegli una password"
                 required
               />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="signupRole">
+              <Form.Label>Seleziona il tuo ruolo</Form.Label>
+              <Form.Select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+              >
+                <option value="cliente">Cliente</option>
+                <option value="istruttore">Istruttore</option>
+              </Form.Select>
             </Form.Group>
 
             <Button variant="success" type="submit" className="w-100">
