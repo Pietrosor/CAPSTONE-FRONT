@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { Form, Button } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
 import NavbarComponent from "../components/NavbarComponent"
-// Attenzione al nome del file: FooterComponent (singolare)
 import FooterComponent from "../components/FooterComponents"
 
 interface SignupForm {
@@ -18,26 +17,42 @@ export default function Signup() {
     password: "",
     role: "cliente",
   })
+  const [error, setError] = useState<string | null>(null)
 
-  // accetta ora eventi da <input> e da <select>
   const handleChange: React.ChangeEventHandler<any> = (e) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Signup data:", form)
-    navigate("/login", { replace: true })
+    setError(null)
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: form.username,
+          password: form.password,
+          role: form.role.toUpperCase(),
+        }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || res.statusText)
+      }
+      navigate("/login", { replace: true })
+    } catch (err: any) {
+      setError(err.message || "Errore di registrazione")
+    }
   }
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      <NavbarComponent />
-
       <main className="flex-grow-1 d-flex align-items-center justify-content-center">
         <div className="w-100 px-3" style={{ maxWidth: 400 }}>
           <h2 className="mb-4 text-center">Iscriviti</h2>
+          {error && <div className="alert alert-danger">{error}</div>}
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="signupUsername">
               <Form.Label>Username</Form.Label>
@@ -85,8 +100,6 @@ export default function Signup() {
           </p>
         </div>
       </main>
-
-      <FooterComponent />
     </div>
   )
 }

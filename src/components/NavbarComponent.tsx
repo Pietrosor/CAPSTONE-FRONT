@@ -26,12 +26,8 @@ export default function NavbarComponent() {
               id="dropdown-nav"
               menuVariant="dark"
             >
-              <NavDropdown.Item
-                className="text-warning"
-                as={Link}
-                to="/action1"
-              >
-                Action 1
+              <NavDropdown.Item className="text-warning" as={Link} to="/signup">
+                Unisciti a noi
               </NavDropdown.Item>
               <NavDropdown.Item
                 className="text-warning"

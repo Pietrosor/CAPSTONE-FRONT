@@ -1,21 +1,11 @@
-.container {
-  max-width: 960px;
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+.content {
+  flex: 1;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
-
-body {
-  overflow-x: hidden;
-}
-
-/* NAVBAR */
-.navbar-costum {
-  color: yellow !important;
-}
-/* FOOTER */

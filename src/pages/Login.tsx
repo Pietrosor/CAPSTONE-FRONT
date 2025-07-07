@@ -4,24 +4,47 @@ import { Link, useNavigate } from "react-router-dom"
 import NavbarComponent from "../components/NavbarComponent"
 import FooterComponent from "../components/FooterComponents"
 
+interface LoginResponse {
+  token: string
+  role: "CLIENTE" | "ISTRUTTORE"
+}
+
 export default function Login() {
   const navigate = useNavigate()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState<string | null>(null)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log({ username, password })
-    navigate("/", { replace: true })
+    setError(null)
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      })
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || res.statusText)
+      }
+      const data = (await res.json()) as LoginResponse
+
+      localStorage.setItem("token", data.token)
+      localStorage.setItem("role", data.role)
+
+      navigate("/clienti", { replace: true })
+    } catch (err: any) {
+      setError("Credenziali errate")
+    }
   }
 
   return (
     <div className="d-flex flex-column vh-100">
-      <NavbarComponent />
-
-      <main className="flex-grow-1 d-flex align-items-center justify-content-center ">
+      <main className="flex-grow-1 d-flex align-items-center justify-content-center">
         <div className="container px-3" style={{ maxWidth: "400px" }}>
           <h2 className="mb-4 text-center">Login</h2>
+          {error && <div className="alert alert-danger">{error}</div>}
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
               <Form.Label>Username</Form.Label>
@@ -50,8 +73,6 @@ export default function Login() {
           </p>
         </div>
       </main>
-
-      <FooterComponent />
     </div>
   )
 }

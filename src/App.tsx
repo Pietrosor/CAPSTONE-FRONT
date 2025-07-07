@@ -1,35 +1,43 @@
 import React from "react"
+import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom"
+
 import "bootstrap/dist/css/bootstrap.min.css"
+import "./index.css"
 import "./App.css"
 
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import MainLayout from "./layouts/MainLayout"
-import AuthLayout from "./layouts/AuthLayout"
+import NavbarComponent from "./components/NavbarComponent"
+import FooterComponent from "./components/FooterComponents"
+import RequireAuth from "./components/RequireAuth"
 
 import Home from "./pages/Home"
 import About from "./pages/About"
 import Login from "./pages/Login"
 import Signup from "./pages/Signup"
-import ClienteDashboard from "./pages/ClienteDashboard"
-import IstruttoreDashboard from "./pages/IstruttoreDashboard"
+import ClientiPage from "./pages/ClientiPage"
 
-export default function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* <Route element={<AuthLayout />}> */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+const App: React.FC = () => (
+  <BrowserRouter>
+    <div className="d-flex flex-column min-vh-100">
+      <NavbarComponent />
 
-        <Route path="/cliente" element={<ClienteDashboard />} />
-        <Route path="/istruttore" element={<IstruttoreDashboard />} />
-        {/* </Route> */}
-        <Route element={<MainLayout />}>
+      <main className="flex-grow-1 container my-4">
+        <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="*" element={<h2>404 – Pagina non trovata</h2>} />
-        </Route>
-      </Routes>
-    </Router>
-  )
-}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          <Route element={<RequireAuth />}>
+            <Route path="/clienti" element={<ClientiPage />} />
+          </Route>
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </main>
+
+      <FooterComponent />
+    </div>
+  </BrowserRouter>
+)
+
+export default App
