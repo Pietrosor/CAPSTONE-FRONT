@@ -1,43 +1,40 @@
-import React from "react"
-import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom"
-
-import "bootstrap/dist/css/bootstrap.min.css"
-import "./index.css"
-import "./App.css"
-
-import NavbarComponent from "./components/NavbarComponent"
-import FooterComponent from "./components/FooterComponents"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import RequireAuth from "./components/RequireAuth"
 
 import Home from "./pages/Home"
 import About from "./pages/About"
-import Login from "./pages/Login"
 import Signup from "./pages/Signup"
+import Login from "./pages/Login"
 import ClientiPage from "./pages/ClientiPage"
+import LeMieSchedePage from "./pages/LeMieSchede"
+import ClienteDashboard from "./pages/ClienteDashboard"
+import MainLayout from "./layouts/MainLayout"
 
-const App: React.FC = () => (
-  <BrowserRouter>
-    <div className="d-flex flex-column min-vh-100">
-      <NavbarComponent />
-
-      <main className="flex-grow-1 container my-4">
-        <Routes>
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* tutte queste rotte usano il layout */}
+        <Route element={<MainLayout />}>
+          {/* pagine pubbliche */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
 
+          {/* rotte protette */}
           <Route element={<RequireAuth />}>
-            <Route path="/clienti" element={<ClientiPage />} />
+            {/* istruttore */}
+            <Route path="/istruttore/clienti" element={<ClientiPage />} />
+            {/* cliente */}
+            <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
+            <Route path="/cliente/schede" element={<LeMieSchedePage />} />
           </Route>
 
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </main>
-
-      <FooterComponent />
-    </div>
-  </BrowserRouter>
-)
-
-export default App
+          {/* fallback 404 */}
+          <Route path="*" element={<h1>404 – Pagina non trovata</h1>} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  )
+}
