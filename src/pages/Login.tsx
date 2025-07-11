@@ -1,19 +1,15 @@
-import React, { useState } from "react"
+import { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
 import { Form, Button } from "react-bootstrap"
-import { Link, useNavigate } from "react-router-dom"
-import NavbarComponent from "../components/NavbarComponent"
-import FooterComponent from "../components/FooterComponents"
-
-interface LoginResponse {
-  token: string
-  role: "CLIENTE" | "ISTRUTTORE"
-}
 
 export default function Login() {
   const navigate = useNavigate()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
+  const [creds, setCreds] = useState({ username: "", password: "" })
   const [error, setError] = useState<string | null>(null)
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCreds({ ...creds, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,19 +18,22 @@ export default function Login() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify(creds),
       })
       if (!res.ok) {
-        const text = await res.text()
-        throw new Error(text || res.statusText)
+        const msg = await res.text()
+        throw new Error(msg || "Errore login")
       }
-      const data = (await res.json()) as LoginResponse
-
+      const data: { token: string; role: string } = await res.json()
       localStorage.setItem("token", data.token)
       localStorage.setItem("role", data.role)
 
-      navigate("/clienti", { replace: true })
-    } catch (err: any) {
+      if (data.role === "ISTRUTTORE") {
+        navigate("/istruttore/clienti")
+      } else {
+        navigate("/cliente/dashboard")
+      }
+    } catch (err) {
       setError("Credenziali errate")
     }
   }
@@ -50,8 +49,9 @@ export default function Login() {
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                name="username"
+                value={creds.username}
+                onChange={handleChange}
                 required
               />
             </Form.Group>
@@ -59,8 +59,9 @@ export default function Login() {
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                name="password"
+                value={creds.password}
+                onChange={handleChange}
                 required
               />
             </Form.Group>

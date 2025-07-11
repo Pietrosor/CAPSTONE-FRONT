@@ -5,7 +5,7 @@ import Home from "./pages/Home"
 import About from "./pages/About"
 import Signup from "./pages/Signup"
 import Login from "./pages/Login"
-import ClientiPage from "./pages/ClientiPage"
+import IstruttoreClientiPage from "./pages/IstruttoreClientiPage"
 import LeMieSchedePage from "./pages/LeMieSchede"
 import ClienteDashboard from "./pages/ClienteDashboard"
 import MainLayout from "./layouts/MainLayout"
@@ -25,7 +25,10 @@ export default function App() {
           {/* rotte protette */}
           <Route element={<RequireAuth />}>
             {/* istruttore */}
-            <Route path="/istruttore/clienti" element={<ClientiPage />} />
+            <Route
+              path="/istruttore/clienti"
+              element={<IstruttoreClientiPage />}
+            />
             {/* cliente */}
             <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
             <Route path="/cliente/schede" element={<LeMieSchedePage />} />
