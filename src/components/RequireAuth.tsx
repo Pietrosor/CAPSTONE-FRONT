@@ -1,9 +1,15 @@
-import React from "react"
-import { Navigate, Outlet } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import { Navigate, Outlet, useLocation } from "react-router-dom"
 
-const RequireAuth: React.FC = () => {
-  const token = localStorage.getItem("token")
-  return token ? <Outlet /> : <Navigate to="/login" replace />
+export default function RequireAuth({ roles }: { roles?: string[] }) {
+  const { user } = useAuth()
+  const loc = useLocation()
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: loc }} replace />
+  }
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/" replace />
+  }
+  return <Outlet />
 }
-
-export default RequireAuth
