@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+// src/App.tsx
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import RequireAuth from "./components/RequireAuth"
 
 import Home from "./pages/Home"
@@ -8,33 +9,37 @@ import Login from "./pages/Login"
 import IstruttoreClientiPage from "./pages/IstruttoreClientiPage"
 import LeMieSchedePage from "./pages/LeMieSchede"
 import ClienteDashboard from "./pages/ClienteDashboard"
+
 import MainLayout from "./layouts/MainLayout"
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* tutte queste rotte usano il layout */}
+        {/* Tutte le route passano da MainLayout */}
         <Route element={<MainLayout />}>
-          {/* pagine pubbliche */}
+          {/* Pagine pubbliche */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
 
-          {/* rotte protette */}
-          <Route element={<RequireAuth />}>
-            {/* istruttore */}
+          {/* Pagine protette ISTRUTTORE */}
+          <Route element={<RequireAuth roles={["ISTRUTTORE"]} />}>
             <Route
               path="/istruttore/clienti"
               element={<IstruttoreClientiPage />}
             />
-            {/* cliente */}
+            <Route path="/istruttore/schede" element={<LeMieSchedePage />} />
+          </Route>
+
+          {/* Pagine protette CLIENTE */}
+          <Route element={<RequireAuth roles={["CLIENTE"]} />}>
             <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
             <Route path="/cliente/schede" element={<LeMieSchedePage />} />
           </Route>
 
-          {/* fallback 404 */}
+          {/* Fallback 404 */}
           <Route path="*" element={<h1>404 – Pagina non trovata</h1>} />
         </Route>
       </Routes>

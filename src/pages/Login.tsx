@@ -1,9 +1,11 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { Form, Button } from "react-bootstrap"
+import { useAuth } from "../context/AuthContext"
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [creds, setCreds] = useState({ username: "", password: "" })
   const [error, setError] = useState<string | null>(null)
 
@@ -24,9 +26,14 @@ export default function Login() {
         const msg = await res.text()
         throw new Error(msg || "Errore login")
       }
-      const data: { token: string; role: string } = await res.json()
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("role", data.role)
+      const data: { token: string; username: string; role: string } =
+        await res.json()
+
+      login({
+        token: data.token,
+        username: data.username,
+        role: data.role,
+      })
 
       if (data.role === "ISTRUTTORE") {
         navigate("/istruttore/clienti")
