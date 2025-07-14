@@ -1,18 +1,19 @@
-export async function apiFetch<T>(
+export async function apiFetch<T = any>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
   const token = localStorage.getItem("token");
-  const headers: Record<string,string> = {
-    "Content-Type": "application/json",
-    ...options.headers as any
-  };
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  const res = await fetch(`/api${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API error ${res.status}: ${text}`);
   }
-  const response = await fetch(path, { ...options, headers });
-  if (!response.ok) {
-    throw new Error(`Errore ${response.status}`);
-  }
-  return response.json();
+  return (await res.json()) as T;
 }

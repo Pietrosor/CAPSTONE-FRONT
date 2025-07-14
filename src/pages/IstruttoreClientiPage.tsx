@@ -1,4 +1,3 @@
-// src/pages/IstruttoreClientiPage.tsx
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
@@ -6,7 +5,7 @@ import { useAuth } from "../context/AuthContext"
 interface ClienteDto {
   id: number
   username: string
-  nome?: string // se il DTO contiene anche nome
+  nome?: string
 }
 
 export default function IstruttoreClientiPage() {
@@ -17,7 +16,6 @@ export default function IstruttoreClientiPage() {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
 
-  // Carica clienti assegnati e liberi al mount e ad ogni cambio di token
   useEffect(() => {
     if (!user?.token) return
     const headers = {
@@ -85,6 +83,15 @@ export default function IstruttoreClientiPage() {
                   onClick={() => navigate(`/istruttore/clienti/${c.id}/schede`)}
                 >
                   Schede
+                </button>
+
+                <button
+                  className="btn btn-sm btn-outline-success ms-2"
+                  onClick={() =>
+                    navigate(`/istruttore/clienti/${c.id}/schede/create`)
+                  }
+                >
+                  Nuova scheda
                 </button>
               </td>
             </tr>
