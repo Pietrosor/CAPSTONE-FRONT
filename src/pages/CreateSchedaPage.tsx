@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useExerciseSearch } from "../services/useExerciseSearch"
 import type { Exercise } from "../services/exerciseDB"
 import { createScheda } from "../services/istruttore"
+import type { SchedaDto } from "../types/scheda"
 
 export default function CreateSchedaPage() {
   const { clienteId } = useParams<{ clienteId: string }>()
@@ -11,12 +12,13 @@ export default function CreateSchedaPage() {
   const [titolo, setTitolo] = useState("")
   const [descrizione, setDescrizione] = useState("")
   const [query, setQuery] = useState("")
-  const { results, loading } = useExerciseSearch(query)
+  const { results, loading: loadingSearch } = useExerciseSearch(query)
   const [selezionati, setSelezionati] = useState<Exercise[]>([])
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const addEsercizio = (e: Exercise) => {
-    if (!selezionati.find((x) => x.id === e.id)) {
+    if (!selezionati.some((x) => x.id === e.id)) {
       setSelezionati((old) => [...old, e])
       setQuery("")
     }
@@ -26,18 +28,29 @@ export default function CreateSchedaPage() {
     setSelezionati((old) => old.filter((x) => x.id !== id))
   }
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!titolo.trim() || selezionati.length === 0) return
+  const handleSubmit = async (ev: React.FormEvent) => {
+    ev.preventDefault()
+    console.log("handlesubmit partito", { titolo, selezionati })
+    if (!titolo.trim()) {
+      setError("Devi inserire un titolo")
+      return
+    }
+    setLoading(true)
+    setError(null)
+
     try {
-      await createScheda(clienteId!, {
+      const nuova: SchedaDto = await createScheda(clienteId!, {
         titolo,
         descrizione,
         eserciziIds: selezionati.map((x) => x.id),
       })
-      navigate(`/istruttore/clienti/${clienteId}/schede`)
+      console.log("Scheda creata:", nuova)
+      navigate(`/istruttore/clienti/${clienteId}/scheda`)
     } catch (err: any) {
-      setError(err.message)
+      console.error("Errore createScheda:", err)
+      setError(err.message || "Errore di creazione scheda")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -46,7 +59,7 @@ export default function CreateSchedaPage() {
       <h2 className="mb-4">Crea scheda per cliente #{clienteId}</h2>
       {error && <div className="alert alert-danger">{error}</div>}
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label className="form-label">Titolo</label>
           <input
@@ -67,7 +80,6 @@ export default function CreateSchedaPage() {
           />
         </div>
 
-        {/* Ricerca esercizi */}
         <div className="mb-3">
           <label className="form-label">Cerca esercizi</label>
           <input
@@ -76,7 +88,7 @@ export default function CreateSchedaPage() {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Es. bench press"
           />
-          {loading && <small>Caricamento catalogo esercizi…</small>}
+          {loadingSearch && <small>Caricamento esercizi…</small>}
 
           <ul className="list-group mt-2">
             {results.map((e) => (
@@ -122,12 +134,8 @@ export default function CreateSchedaPage() {
           )}
         </div>
 
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={!titolo.trim() || selezionati.length === 0}
-        >
-          Salva scheda
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? "Salvataggio…" : "Salva scheda"}
         </button>
       </form>
     </div>

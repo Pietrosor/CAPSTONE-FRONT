@@ -10,6 +10,8 @@ export default function NavbarComponent() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
 
+  const profilePath =
+    user?.role === "CLIENTE" ? "/cliente/dashboard" : "/istruttore/clienti"
   const handleLogout = () => {
     logout()
     navigate("/login")
@@ -51,9 +53,14 @@ export default function NavbarComponent() {
           <Nav className="ms-auto align-items-center">
             {user ? (
               <>
-                <Navbar.Text className="text-warning me-3">
+                <Nav.Link
+                  as={Link}
+                  to={profilePath}
+                  className="text-warning me-3"
+                >
                   Ciao, <strong>{user.username}</strong>
-                </Navbar.Text>
+                </Nav.Link>
+
                 <Nav.Link
                   className="text-warning"
                   onClick={handleLogout}
