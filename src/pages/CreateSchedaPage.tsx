@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useExerciseSearch } from "../services/useExerciseSearch"
 import type { Exercise } from "../services/exerciseDB"
 import { createScheda } from "../services/istruttore"
+import { assignSchedaToCliente } from "../services/assignSchedaService"
 import type { SchedaDto } from "../types/scheda"
 
 export default function CreateSchedaPage() {
@@ -30,14 +31,14 @@ export default function CreateSchedaPage() {
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault()
-    console.log("handlesubmit partito", { titolo, selezionati })
+    setError(null)
+
     if (!titolo.trim()) {
       setError("Devi inserire un titolo")
       return
     }
-    setLoading(true)
-    setError(null)
 
+    setLoading(true)
     try {
       const nuova: SchedaDto = await createScheda(clienteId!, {
         titolo,
@@ -45,10 +46,17 @@ export default function CreateSchedaPage() {
         eserciziIds: selezionati.map((x) => x.id),
       })
       console.log("Scheda creata:", nuova)
+
+      const associata: SchedaDto = await assignSchedaToCliente(
+        nuova.id.toString(),
+        clienteId!
+      )
+      console.log("Scheda associata:", associata)
+
       navigate(`/istruttore/clienti/${clienteId}/scheda`)
     } catch (err: any) {
-      console.error("Errore createScheda:", err)
-      setError(err.message || "Errore di creazione scheda")
+      console.error("Errore creazione/associazione:", err)
+      setError(err.message || "Errore durante il salvataggio")
     } finally {
       setLoading(false)
     }

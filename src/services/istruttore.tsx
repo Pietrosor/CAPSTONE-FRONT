@@ -1,4 +1,3 @@
-// src/services/istruttore.ts
 import type { SchedaDto } from "../types/scheda"
 import { apiFetch } from "../api/api"
 
@@ -10,11 +9,7 @@ export function searchExercises(
 
 export function createScheda(
   clienteId: string,
-  dto: {
-    titolo: string
-    descrizione: string
-    eserciziIds: string[]
-  }
+  dto: { titolo: string; descrizione: string; eserciziIds: string[] }
 ): Promise<SchedaDto> {
   return apiFetch<SchedaDto>(`/api/istruttore/clienti/${clienteId}/scheda`, {
     method: "POST",
