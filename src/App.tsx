@@ -10,6 +10,7 @@ import ClienteDashboard from "./pages/ClienteDashboard"
 import LeMieSchedePage from "./pages/LeMieSchede"
 import MainLayout from "./layouts/MainLayout"
 import CreateSchedaPage from "./pages/CreateSchedaPage"
+import SchedeClientePage from "./pages/SchedeClienti"
 
 export default function App() {
   return (
@@ -25,6 +26,10 @@ export default function App() {
             <Route
               path="/istruttore/clienti"
               element={<IstruttoreClientiPage />}
+            />
+            <Route
+              path="/istruttore/clienti/:clienteId/schede"
+              element={<SchedeClientePage />}
             />
             <Route path="/istruttore/schede" element={<LeMieSchedePage />} />
             <Route
