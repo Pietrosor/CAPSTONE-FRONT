@@ -40,13 +40,6 @@ export default function NavbarComponent() {
               <NavDropdown.Item className="text-warning" as={Link} to="/signup">
                 Unisciti a noi
               </NavDropdown.Item>
-              <NavDropdown.Item
-                className="text-warning"
-                as={Link}
-                to="/action2"
-              >
-                Action 2
-              </NavDropdown.Item>
             </NavDropdown>
           </Nav>
 
